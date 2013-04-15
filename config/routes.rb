@@ -5,9 +5,6 @@ Polycule::Application.routes.draw do
   resources :people
 
 
-  resources :basics
-
-
   get "home/index"
 
   # The priority is based upon order of creation:
