@@ -3,7 +3,6 @@ class RelationshipsController < ApplicationController
   # GET /relationships.json
   def index
     @relationships = Relationship.all
-
     respond_to do |format|
       format.html # index.html.erb
       format.json { render json: @relationships }
@@ -14,7 +13,6 @@ class RelationshipsController < ApplicationController
   # GET /relationships/1.json
   def show
     @relationship = Relationship.find(params[:id])
-
     respond_to do |format|
       format.html # show.html.erb
       format.json { render json: @relationship }

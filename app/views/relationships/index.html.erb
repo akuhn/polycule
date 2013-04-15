@@ -19,8 +19,8 @@
 
 <% @relationships.each do |relationship| %>
   <tr>
-    <td><%= relationship.person_id %></td>
-    <td><%= relationship.partner_id %></td>
+    <td><%= relationship.person.name %></td>
+    <td><%= relationship.partner.name %></td>
     <td><%= relationship.since %></td>
     <td><%= relationship.until %></td>
     <td><%= relationship.kind %></td>

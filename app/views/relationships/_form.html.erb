@@ -12,12 +12,12 @@
   <% end %>
 
   <div class="field">
-    <%= f.label :source %><br />
-    <%= f.number_field :person_id %>
+    <%= f.label :Person %><br />	
+	<%= collection_select( :relationship, :person_id, Person.all, :id, :name, {} ) -%>
   </div>
   <div class="field">
-    <%= f.label :target %><br />
-    <%= f.number_field :partner_id %>
+    <%= f.label :Partner %><br />
+	<%= collection_select( :relationship, :partner_id, Person.all, :id, :name, {} ) -%>
   </div>
   <div class="field">
     <%= f.label :since %><br />
