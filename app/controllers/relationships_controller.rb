@@ -40,8 +40,7 @@ class RelationshipsController < ApplicationController
   # POST /relationships
   # POST /relationships.json
   def create
-    @relationship = Relationship.new(params[:relationship])
-
+    @relationship = Person.find(params[:relationship][:person_id]).relationships.build(params[:relationship])
     respond_to do |format|
       if @relationship.save
         format.html { redirect_to @relationship, notice: 'Relationship was successfully created.' }

@@ -2,8 +2,8 @@
 
 <table>
   <tr>
-    <th>Source</th>
-    <th>Target</th>
+    <th>Person</th>
+    <th>Partner</th>
     <th>Since</th>
     <th>Until</th>
     <th>Kind</th>
@@ -19,8 +19,8 @@
 
 <% @relationships.each do |relationship| %>
   <tr>
-    <td><%= relationship.source %></td>
-    <td><%= relationship.target %></td>
+    <td><%= relationship.person_id %></td>
+    <td><%= relationship.partner_id %></td>
     <td><%= relationship.since %></td>
     <td><%= relationship.until %></td>
     <td><%= relationship.kind %></td>

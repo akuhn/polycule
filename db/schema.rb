@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130415024933) do
+ActiveRecord::Schema.define(:version => 20130415083725) do
 
   create_table "basics", :force => true do |t|
     t.text     "people"
@@ -40,8 +40,8 @@ ActiveRecord::Schema.define(:version => 20130415024933) do
   end
 
   create_table "relationships", :force => true do |t|
-    t.integer  "source"
-    t.integer  "target"
+    t.integer  "person_id"
+    t.integer  "partner_id"
     t.date     "since"
     t.date     "until"
     t.string   "kind"
