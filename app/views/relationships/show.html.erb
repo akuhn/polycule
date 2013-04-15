@@ -1,0 +1,55 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Source:</b>
+  <%= @relationship.source %>
+</p>
+
+<p>
+  <b>Target:</b>
+  <%= @relationship.target %>
+</p>
+
+<p>
+  <b>Since:</b>
+  <%= @relationship.since %>
+</p>
+
+<p>
+  <b>Until:</b>
+  <%= @relationship.until %>
+</p>
+
+<p>
+  <b>Kind:</b>
+  <%= @relationship.kind %>
+</p>
+
+<p>
+  <b>Married:</b>
+  <%= @relationship.married %>
+</p>
+
+<p>
+  <b>Fluidbonded:</b>
+  <%= @relationship.fluidbonded %>
+</p>
+
+<p>
+  <b>Sexual:</b>
+  <%= @relationship.sexual %>
+</p>
+
+<p>
+  <b>Kinky:</b>
+  <%= @relationship.kinky %>
+</p>
+
+<p>
+  <b>Note:</b>
+  <%= @relationship.note %>
+</p>
+
+
+<%= link_to 'Edit', edit_relationship_path(@relationship) %> |
+<%= link_to 'Back', relationships_path %>

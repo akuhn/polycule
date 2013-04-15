@@ -1,0 +1,41 @@
+<h1>Listing relationships</h1>
+
+<table>
+  <tr>
+    <th>Source</th>
+    <th>Target</th>
+    <th>Since</th>
+    <th>Until</th>
+    <th>Kind</th>
+    <th>Married</th>
+    <th>Fluidbonded</th>
+    <th>Sexual</th>
+    <th>Kinky</th>
+    <th>Note</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @relationships.each do |relationship| %>
+  <tr>
+    <td><%= relationship.source %></td>
+    <td><%= relationship.target %></td>
+    <td><%= relationship.since %></td>
+    <td><%= relationship.until %></td>
+    <td><%= relationship.kind %></td>
+    <td><%= relationship.married %></td>
+    <td><%= relationship.fluidbonded %></td>
+    <td><%= relationship.sexual %></td>
+    <td><%= relationship.kinky %></td>
+    <td><%= relationship.note %></td>
+    <td><%= link_to 'Show', relationship %></td>
+    <td><%= link_to 'Edit', edit_relationship_path(relationship) %></td>
+    <td><%= link_to 'Destroy', relationship, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Relationship', new_relationship_path %>

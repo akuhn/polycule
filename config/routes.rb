@@ -1,4 +1,10 @@
 Polycule::Application.routes.draw do
+  resources :relationships
+
+
+  resources :people
+
+
   resources :basics
 
 

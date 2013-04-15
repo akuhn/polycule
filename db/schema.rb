@@ -11,13 +11,47 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130414232601) do
+ActiveRecord::Schema.define(:version => 20130415024933) do
 
   create_table "basics", :force => true do |t|
     t.text     "people"
     t.text     "relationships"
     t.datetime "created_at",    :null => false
     t.datetime "updated_at",    :null => false
+  end
+
+  create_table "people", :force => true do |t|
+    t.string   "name"
+    t.string   "nickname"
+    t.string   "gender"
+    t.date     "birthday"
+    t.string   "house"
+    t.string   "city"
+    t.string   "state"
+    t.string   "country"
+    t.string   "email"
+    t.string   "twitter"
+    t.string   "facebook"
+    t.string   "okcupid"
+    t.string   "fetlife"
+    t.text     "note"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  create_table "relationships", :force => true do |t|
+    t.integer  "source"
+    t.integer  "target"
+    t.date     "since"
+    t.date     "until"
+    t.string   "kind"
+    t.boolean  "married"
+    t.boolean  "fluidbonded"
+    t.boolean  "sexual"
+    t.boolean  "kinky"
+    t.text     "note"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
   end
 
   create_table "sessions", :force => true do |t|

@@ -1,0 +1,25 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  source: 1
+  target: 1
+  since: 2013-04-14
+  until: 2013-04-14
+  kind: MyString
+  married: false
+  fluidbonded: false
+  sexual: false
+  kinky: false
+  note: MyText
+
+two:
+  source: 1
+  target: 1
+  since: 2013-04-14
+  until: 2013-04-14
+  kind: MyString
+  married: false
+  fluidbonded: false
+  sexual: false
+  kinky: false
+  note: MyText

@@ -1,0 +1,57 @@
+<%= form_for(@relationship) do |f| %>
+  <% if @relationship.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@relationship.errors.count, "error") %> prohibited this relationship from being saved:</h2>
+
+      <ul>
+      <% @relationship.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :source %><br />
+    <%= f.number_field :source %>
+  </div>
+  <div class="field">
+    <%= f.label :target %><br />
+    <%= f.number_field :target %>
+  </div>
+  <div class="field">
+    <%= f.label :since %><br />
+    <%= f.date_select :since %>
+  </div>
+  <div class="field">
+    <%= f.label :until %><br />
+    <%= f.date_select :until %>
+  </div>
+  <div class="field">
+    <%= f.label :kind %><br />
+    <%= f.text_field :kind %>
+  </div>
+  <div class="field">
+    <%= f.label :married %><br />
+    <%= f.check_box :married %>
+  </div>
+  <div class="field">
+    <%= f.label :fluidbonded %><br />
+    <%= f.check_box :fluidbonded %>
+  </div>
+  <div class="field">
+    <%= f.label :sexual %><br />
+    <%= f.check_box :sexual %>
+  </div>
+  <div class="field">
+    <%= f.label :kinky %><br />
+    <%= f.check_box :kinky %>
+  </div>
+  <div class="field">
+    <%= f.label :note %><br />
+    <%= f.text_area :note %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>
