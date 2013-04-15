@@ -1,4 +1,6 @@
 Polycule::Application.routes.draw do
+  get "graph/index"
+
   resources :relationships
 
 
