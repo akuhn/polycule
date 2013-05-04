@@ -42,3 +42,4 @@ end
 # ---------------------------------------------
 
 gem 'devise'
+gem 'devise_invitable'

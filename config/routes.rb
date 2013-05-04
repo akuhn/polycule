@@ -1,7 +1,9 @@
 Polycule::Application.routes.draw do
 
+  get "users/sign_up" => "home#index"
+  
   devise_for :users
-
+  
   get "graph/index"
 
   resources :relationships
