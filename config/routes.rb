@@ -1,5 +1,8 @@
 Polycule::Application.routes.draw do
 
+  get "invites/new" => "invite#new"
+  post "invites" => "invite#create"
+
   get "users/sign_up" => "home#index"
   
   devise_for :users
@@ -7,7 +10,6 @@ Polycule::Application.routes.draw do
   get "graph/index"
 
   resources :relationships
-
   resources :people
 
   get "home/index"

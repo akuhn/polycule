@@ -1,7 +1,11 @@
-<h1>The Polycule</h1>
-<p>Describing the polycule</p>
+<h1>My Polycule</h1>
 
-<p><%= link_to 'People', people_path %></p>
-<p><%= link_to 'Relationships', relationships_path %></p>
-<p><%= link_to 'Graph', graph_index_path %></p>
+<% if user_signed_in? %>
+	<p><%= link_to 'People', people_path %></p>
+	<p><%= link_to 'Relationships', relationships_path %></p>
+	<p><%= link_to 'Visualization', graph_path %></p>
+<% else %>
+	<p><%= link_to 'Sign up', invites_new_path %></p>
+<% end %>
+
 
