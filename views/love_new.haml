@@ -1,0 +1,12 @@
+%h2 New Love
+
+%form{ action: '/love/new', method: 'post' }
+	%input{ type: 'hidden', name: 'me', value: @person['_id'] }
+	%p
+		= @person['name']
+		and
+		%select{ name: 'them' }
+			- @people.each do |person|
+				%option{ value: person['_id'] }= person['name']
+	%p
+		%input{ type: 'submit' }

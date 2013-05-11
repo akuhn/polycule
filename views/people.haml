@@ -1,0 +1,13 @@
+%h2 My People
+
+%ul
+  - @people.each do |person|
+    %li
+      %a{ href: "/person/#{person['_id']}" }= person['name']
+  
+%ul
+  %li
+    %a{ href: "/person/new" } Add new person
+  %li  
+    %a{ href: "/" } Back to home
+      

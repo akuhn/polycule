@@ -1,0 +1,9 @@
+%h2 Love
+
+= PEOPLE.find_one(_id: @love['me'])['name']
+and
+= PEOPLE.find_one(_id: @love['them'])['name']
+
+%ul
+	%li
+		%a{ href: '/people' } Back to my people
