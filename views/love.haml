@@ -1,8 +1,8 @@
 %h2 Love
 
-= PEOPLE.find_one(_id: @love['me'])['name']
+%a{ href: "/person/#{@love.me.id}" }= @love.me.name
 and
-= PEOPLE.find_one(_id: @love['them'])['name']
+%a{ href: "/person/#{@love.them.id}" }= @love.them.name
 
 %ul
 	%li

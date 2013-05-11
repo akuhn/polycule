@@ -1,13 +1,9 @@
 require 'sinatra'
 require 'mongo'
 require 'haml'
+require 'json'
 
-DB = Mongo::Connection.new("localhost", 27017).db('polycule')
-
-PEOPLE = DB['people']
-LOVES = DB['loves']
-
-# require 'pry'; binding.pry
+require_relative 'model'
 
 get '/' do
   haml :index
@@ -16,7 +12,7 @@ end
 # People
 
 get '/people' do
-  @people = PEOPLE.find
+  @people = People.all
   haml :people
 end
 
@@ -25,47 +21,39 @@ get '/person/new' do
 end
 
 post '/person/new' do
-  person = {
+  data = {
     name: params[:name],
     fb: params[:fb]
   }
-  p person
-  id = PEOPLE.insert(person)
+  People.new.update(data).save!
   redirect "/people"
 end
 
 get '/person/:me' do
-  me = BSON::ObjectId.from_string(params[:me])
-  @person = PEOPLE.find_one(_id: me)
-  @loves = LOVES.find('$or' => [{ me: me },{ them: me }])
-  
-  
+  @person = People.find_by_id params[:me]
   haml :person
 end
 
 # Relationships
 
 get '/love/new' do
-  me = BSON::ObjectId.from_string(params[:me])
-  @person = PEOPLE.find_one(_id: me)
-  @people = PEOPLE.find(_id: {'$ne' => me})
+  @person = People.find_by_id params[:me]
   haml :love_new
 end 
 
 post '/love/new' do
-  me = BSON::ObjectId.from_string(params[:me])
-  them = BSON::ObjectId.from_string(params[:them])
+  me = People.find_by_id params[:me]
+  them = People.find_by_id params[:them]
   data = {
-    me: me,
-    them: them
+    me_id: me.id,
+    them_id: them.id
   }
-  id = LOVES.insert(data)
-  redirect "/person/#{me}"
+  Loves.new.update(data).save!
+  redirect "/person/#{me.id}"
 end
 
 get '/love/:us' do
-  us = BSON::ObjectId.from_string(params[:us])
-  @love = LOVES.find_one(_id: us)
+  @love = Loves.find_by_id params[:us]
   haml :love
 end
 
@@ -76,4 +64,20 @@ get '/polycule' do
   raise
 end
 
-
+get '/polycule/data.json' do
+  content_type :json
+  {
+    edges: Loves.all.collect do |each|
+      {
+        source: each['me'].to_s,
+        target: each['them'].to_s
+      }
+    end,
+    nodes: People.all.collect do |each|
+      {
+        id: each['_id'].to_s,
+        name: each.name
+      }
+    end
+  }.to_json
+end

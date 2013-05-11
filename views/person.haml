@@ -1,16 +1,16 @@
 %h2 Person
 
-= @person['name']
+= @person.name
 
 %ul
-	- @loves.each do |love|
+	- @person.relationships.each do |love|
 		%li
-			%a{ href: "/love/#{love['_id']}"} 
+			%a{ href: "/love/#{love.id}"} 
 				with
-				= PEOPLE.find_one(_id: love['me'] == @person['_id'] ? love['them'] : love['me'])['name']
+				= love.them.name
 			
 %ul
 	%li
-		%a{ href: "/love/new?me=#{@person['_id']}" } Add new love
+		%a{ href: "/love/new?me=#{@person.id}" } Add new love
 	%li
 		%a{ href: '/people' } Back to my people
