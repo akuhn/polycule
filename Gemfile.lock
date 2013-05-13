@@ -6,6 +6,7 @@ GEM
       bson (~> 1.8.5)
     haml (4.0.2)
       tilt
+    json (1.5.5)
     mongo (1.8.5)
       bson (~> 1.8.5)
     rack (1.5.2)
@@ -23,5 +24,6 @@ PLATFORMS
 DEPENDENCIES
   bson_ext
   haml
+  json
   mongo
   sinatra
