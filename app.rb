@@ -3,8 +3,10 @@ require 'mongo'
 require 'haml'
 require 'json'
 
-use Rack::Auth::Basic, "Restricted Area" do |username, password|
-  username == 'adam' and password == '***'
+if ENV['RACK_ENV'] == 'production'
+  use Rack::Auth::Basic, "Restricted Area" do |username, password|
+    username == ENV['MY_USER'] and password == ENV['MY_PASSWD']
+  end
 end
 
 require_relative 'model'
