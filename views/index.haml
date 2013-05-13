@@ -1,8 +1,15 @@
-%h2 My Polycule
+%style
+	\.hero-unit { margin: 48px 0; background-color: #cdf }
+	\.hero-unit h1 { font-size: 100px; line-height: 1 }
+	\.hero-unit p.lead { margin: 48px }
+	\.hero-unit btn { font-size: 21px; padding: 14px 24px }
 
-%ul
-  %li 
-    %a{ href: '/people' } Edit people
-  %li
-    %a{ href: '/polycule' } View polycule
-        
+.hero-unit.text-center
+	%h1 
+		%span{ style: 'color:#89b' }> my
+		polycule
+	%p.lead
+	%p
+		%a.btn.btn-success.btn-large{ href: '/people' } Edit my people
+		
+		%a.btn.btn-success.btn-large{ href: '/vis' } View my polycule

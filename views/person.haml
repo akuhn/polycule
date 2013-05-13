@@ -1,6 +1,7 @@
-%h2 Person
+%h2= @person.name
 
-= @person.name
+- if @person['fb'] then
+	%img{ src: "https://graph.facebook.com/#{@person.fb.id}/picture?width=200&height=200", width: 100, height: 100, style: 'background-color: grey' }
 
 %ul
 	- @person.relationships.each do |love|
@@ -9,8 +10,5 @@
 				with
 				= love.them.name
 			
-%ul
-	%li
-		%a{ href: "/love/new?me=#{@person.id}" } Add new love
-	%li
-		%a{ href: '/people' } Back to my people
+%p
+	%a.btn{ href: "/love/new?me=#{@person.id}" } Add new love

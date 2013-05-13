@@ -21,11 +21,10 @@ get '/person/new' do
 end
 
 post '/person/new' do
-  data = {
-    name: params[:name],
-    fb: params[:fb]
-  }
-  People.new.update(data).save!
+  p = People.new
+  p[:name] = params[:name] unless params[:name].empty?
+  p.fetch_facebook params[:fb]
+  p.save!
   redirect "/people"
 end
 
@@ -60,7 +59,7 @@ end
 
 # Polycule visualization
 
-get '/polycule' do
+get '/vis' do
   raise
 end
 
@@ -69,8 +68,8 @@ get '/polycule/data.json' do
   {
     edges: Loves.all.collect do |each|
       {
-        source: each['me'].to_s,
-        target: each['them'].to_s
+        source: each['me_id'].to_s,
+        target: each['them_id'].to_s
       }
     end,
     nodes: People.all.collect do |each|

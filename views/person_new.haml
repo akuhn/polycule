@@ -1,13 +1,11 @@
-%h2 New Person
+%h1 New Person
 
 %form{ action: '/person/new', method: 'post' }
   %p
     %label{ for: 'name' } Name
-    %br
     %input{ name: 'name', type: 'text' }
   %p
     %label{ for: 'fb' } Facebook profile
-    %br
     %input{ name: 'fb', type: 'text' }
   %p
     %input{ type: 'submit' }

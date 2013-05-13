@@ -1,5 +1,7 @@
 require 'rubygems'
 require 'mongo'
+require 'json'
+require 'net/http'
 
 DB = Mongo::Connection.new("localhost", 27017).db('polycule')
 
@@ -20,13 +22,16 @@ class Model < Hash
     end
   end
   def method_missing(name,*args)
-    fetch(name.to_s){super}
+    value = self[name.to_s]
+    return super unless value
+    value = Model.new.update(value) if Hash === value
+    return value
   end
   def id
-    self['_id']
+    fetch('_id'){fetch('id'){raise}}
   end
   def save!
-    raise if self.id 
+    raise if self['_id'] 
     self.class.collection.insert(self)
   end
 end
@@ -36,6 +41,15 @@ class People < Model
     id = self['_id']
     loves = Loves.find '$or' => [{me_id: id},{them_id: id}]
     loves.each{|love| love.swap unless love.me_id == id }
+  end
+  def fetch_facebook url
+    p path = "/#{URI.parse(url).path}"
+    p r = Net::HTTP.get_response('graph.facebook.com',path)
+    return unless r.code == "200"
+    self['fb'] = JSON.parse(r.body)
+  end
+  def name
+    self['name'] or (self['fb'] and self['fb']['name']) or 'A person'
   end
 end
 
