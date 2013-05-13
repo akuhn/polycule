@@ -2,7 +2,7 @@
 
 - if @person['fb'] then
 	%p
-		%img{ src: "https://graph.facebook.com/#{@person.fb.id}/picture?width=200&height=200" }
+		%img{ src: @person.picture(200) }
 
 %ul
 	- @person.relationships.each do |love|

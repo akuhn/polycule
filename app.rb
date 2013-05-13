@@ -71,7 +71,7 @@ get '/vis/data.json' do
       index[each['_id'].to_s]
       {
         name: each.name,
-        picture: each.picture
+        picture: each.picture(128)
       }
     end,
     links: Loves.all.collect do |each|
