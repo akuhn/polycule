@@ -3,6 +3,10 @@ require 'mongo'
 require 'haml'
 require 'json'
 
+use Rack::Auth::Basic, "Restricted Area" do |username, password|
+  username == 'adam' and password == '***'
+end
+
 require_relative 'model'
 
 get '/' do
