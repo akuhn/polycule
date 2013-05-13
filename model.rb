@@ -41,6 +41,10 @@ class Model < Hash
     raise if self['_id'] 
     self.class.collection.insert(self)
   end
+  def delete!
+    raise unless self['_id'] 
+    self.class.collection.remove(_id: self['_id'])
+  end
 end
 
 class People < Model

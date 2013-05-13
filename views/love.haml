@@ -4,3 +4,8 @@
 and
 %a{ href: "/person/#{@love.them.id}" }= @love.them.name
 
+%p
+	%form{ action: "/love/#{@love.id}", method: 'post', onsubmit: 'return confirm("Are you sure?")' }
+		%input{ name: '_method', value: 'delete', type: 'hidden' }
+		%input.btn.btn-danger{ type: 'submit', value: 'Remove' } 
+

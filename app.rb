@@ -37,6 +37,14 @@ get '/person/:me' do
   haml :person
 end
 
+delete '/person/:me' do
+  @person = People.find_by_id params[:me]
+  @person.delete!
+  @person.relationships.each(&:delete!)
+  redirect "/people"
+end
+
+
 # Relationships
 
 get '/love/new' do
@@ -59,6 +67,14 @@ get '/love/:us' do
   @love = Loves.find_by_id params[:us]
   haml :love
 end
+
+delete '/love/:us' do
+  @love = Loves.find_by_id params[:us]
+  @love.delete!
+  redirect "/person/#{@love.me_id}"
+end
+
+
 
 
 # Polycule visualization
