@@ -51,6 +51,9 @@ class People < Model
   def name
     self['name'] or (self['fb'] and self['fb']['name']) or 'A person'
   end
+  def picture
+    "https://graph.facebook.com/#{self.fb.id}/picture" if self['fb']
+  end
 end
 
 class Loves < Model

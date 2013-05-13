@@ -60,23 +60,25 @@ end
 # Polycule visualization
 
 get '/vis' do
-  raise
+  haml :vis
 end
 
-get '/polycule/data.json' do
+get '/vis/data.json' do
+  index = Hash.new{|h,k|h[k]=h.size}
   content_type :json
   {
-    edges: Loves.all.collect do |each|
+    nodes: People.all.collect do |each|
+      index[each['_id'].to_s]
       {
-        source: each['me_id'].to_s,
-        target: each['them_id'].to_s
+        name: each.name,
+        picture: each.picture
       }
     end,
-    nodes: People.all.collect do |each|
+    links: Loves.all.collect do |each|
       {
-        id: each['_id'].to_s,
-        name: each.name
+        source: index[each['me_id'].to_s],
+        target: index[each['them_id'].to_s]
       }
-    end
+    end    
   }.to_json
 end
