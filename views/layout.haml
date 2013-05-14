@@ -17,4 +17,11 @@
 		.container
 			.row
 				.span12
+				
+					- if flash[:notice]	
+						%p
+							.alert
+								%strong Notice!
+								= flash[:notice]	
+				
 					= yield

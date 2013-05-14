@@ -1,4 +1,5 @@
 require 'sinatra'
+require 'sinatra/flash'
 require 'mongo'
 require 'haml'
 require 'json'
@@ -8,6 +9,8 @@ if ENV['RACK_ENV'] == 'production'
     username == ENV['MY_USER'] and password == ENV['MY_PASSWD']
   end
 end
+
+enable :sessions
 
 require_relative 'model'
 
@@ -43,6 +46,7 @@ delete '/person/:me' do
   @person = People.find_by_id params[:me]
   @person.delete!
   @person.relationships.each(&:delete!)
+  flash[:notice] = "Person removed."
   redirect "/people"
 end
 
@@ -73,6 +77,7 @@ end
 delete '/love/:us' do
   @love = Loves.find_by_id params[:us]
   @love.delete!
+  flash[:notice] = "Love removed."
   redirect "/person/#{@love.me_id}"
 end
 
