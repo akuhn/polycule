@@ -29,6 +29,9 @@ class Model < Hash
     def find query
       collection.find(query).collect{|each|self.new.merge(each)}
     end
+    def find_one query
+      self.new.merge(collection.find_one(query))
+    end
   end
   def method_missing(name,*args)
     value = self[name.to_s]
@@ -90,4 +93,7 @@ class Loves < Model
   def me
     @me or @me = People.find_by_id(me_id)
   end
+end
+
+class Users < Model
 end

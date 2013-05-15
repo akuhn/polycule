@@ -1,4 +1,3 @@
-!!! 5
 %html
 	%head
 		%title My Polycule v0.1
@@ -14,7 +13,13 @@
 							%a{ href: '/people' } People
 						%li
 							%a{ href: '/vis' } Visualization
-
+					%p.navbar-text.pull-right
+						- if session[:user]
+							You are #{session[:username]}, 
+							%a{ href: '/logout' } log out?
+						- else
+							%a{ href: '/login' } Log in
+							
 		.container
 			.row
 				.span12

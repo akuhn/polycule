@@ -1,6 +1,7 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    bcrypt-ruby (3.0.1)
     bson (1.8.5)
     bson_ext (1.8.5)
       bson (~> 1.8.5)
@@ -25,6 +26,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  bcrypt-ruby
   bson_ext
   haml
   json

@@ -1,0 +1,15 @@
+%h1 Log In
+
+%form{ action: '/login', method: 'post' }
+	%p
+		%label{ for: 'username' } Username
+		%input{ name: 'username', type: 'text' }
+	%p
+		%label{ for: 'password' } Password
+		%input{ name: 'password', type: 'password' }
+	%p
+		%input.btn{ type: 'submit', value: 'Log in' }
+
+%p
+	Don't have an account? 
+	%a{ href: '/signup' } Sign up

@@ -1,0 +1,14 @@
+%h1 Sign Up
+
+%form{ action: '/signup', method: 'post' }
+	%p
+		%label{ for: 'username' } Username
+		%input{ name: 'username', type: 'text' }
+	%p
+		%label{ for: 'password' } Password
+		%input{ name: 'password', type: 'password' }
+	%p
+		%label{ for: 'confirm' } Confirm password
+		%input{ name: 'confirm', type: 'password' }
+	%p
+		%input.btn{ type: 'submit', value: 'Sign up' }
