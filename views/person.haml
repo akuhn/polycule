@@ -1,6 +1,6 @@
 %h2= @person.name
 
-- if @person['fb'] then
+- if @person.picture then
 	%p
 		%img{ src: @person.picture(200) }
 

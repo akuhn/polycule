@@ -1,7 +1,7 @@
 %h1 My People
 
 %ul
-  - @people.each do |person|
+  - @people.sort_by(&:name).each do |person|
     %li
       %a{ href: "/person/#{person['_id']}" }= person.name
   

@@ -6,7 +6,8 @@
 		= @person.name
 		and
 		%select{ name: 'them' }
-			- People.all.each do |them|
+			%option
+			- People.all.sort_by(&:name).each do |them|
 				%option{ value: them.id }= them.name
 	%p
 		%input.btn{ type: 'submit' }

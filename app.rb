@@ -34,6 +34,7 @@ post '/person/new' do
   p = People.new
   p[:name] = params[:name] unless params[:name].empty?
   p.fetch_facebook params[:fb]
+  p.fetch_okcupid params[:okc]
   p.save!
   redirect "/people"
 end

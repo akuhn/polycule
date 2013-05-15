@@ -3,6 +3,8 @@ require 'mongo'
 require 'json'
 require 'net/http'
 
+require_relative 'okcupid'
+
 if ENV['RACK_ENV'] == 'production'
   db = URI.parse(ENV['MONGOHQ_URL'])
   db_name = db.path.gsub(/^\//, '')
@@ -54,16 +56,27 @@ class People < Model
     loves.each{|love| love.swap unless love.me_id == id }
   end
   def fetch_facebook url
+    return if url.empty?
     p path = "/#{URI.parse(url).path}"
     p r = Net::HTTP.get_response('graph.facebook.com',path)
     return unless r.code == "200"
     self['fb'] = JSON.parse(r.body)
   end
+  def fetch_okcupid url
+    return if url.empty?
+    data = OKCupid.fetch url
+    self['okc'] = data if data
+  end
   def name
-    self['name'] or (self['fb'] and self['fb']['name']) or 'A person'
+    return self['name'] if self['name']
+    return self.fb.name if self['fb']
+    return self.okc.name if self['okc']
+    return 'A person'
   end
   def picture(size=100)
-    "https://graph.facebook.com/#{self.fb.id}/picture?width=#{size}&height=#{size}" if self['fb']
+    return self.okc.picture.gsub('160x160',"#{size}x#{size}") if self['okc']
+    return "https://graph.facebook.com/#{self.fb.id}/picture?width=#{size}&height=#{size}" if self['fb']
+    return nil
   end
 end
 
