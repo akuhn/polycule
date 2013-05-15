@@ -94,6 +94,20 @@ post '/person/new', :auth => :user do
   redirect "/people"
 end
 
+get '/person/:me/edit', :auth => :user do
+  @person = People.find_by_id params[:me]
+  haml :person_edit
+end
+
+post '/person/:me/edit', :auth => :user do
+  p = People.find_by_id params[:me]
+  p[:name] = params[:name] unless params[:name].empty?
+  p.fetch_facebook params[:fb] unless p.fb.username == params[:fb]
+  p.fetch_okcupid params[:okc] unless p.okc.name == params[:okc]
+  p.update!
+  redirect "/person/#{p.id}"
+end
+
 get '/person/:me', :auth => :user do
   @person = People.find_by_id params[:me]
   haml :person

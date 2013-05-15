@@ -46,6 +46,10 @@ class Model < Hash
     raise if self['_id'] 
     self.class.collection.insert(self)
   end
+  def update!
+    raise unless self['_id'] 
+    self.class.collection.update({_id: self['_id']}, self)
+  end
   def delete!
     raise unless self['_id'] 
     self.class.collection.remove(_id: self['_id'])
@@ -59,16 +63,19 @@ class People < Model
     loves.each{|love| love.swap unless love.me_id == id }
   end
   def fetch_facebook url
-    return if url.empty?
-    p path = "/#{URI.parse(url).path}"
-    p r = Net::HTTP.get_response('graph.facebook.com',path)
-    return unless r.code == "200"
-    self['fb'] = JSON.parse(r.body)
+    unless url.empty?
+      path = "/#{URI.parse(url).path}"
+      r = Net::HTTP.get_response('graph.facebook.com',path)
+      return self['fb'] = JSON.parse(r.body) if r.code == "200"
+    end
+    self.delete('fb')
   end
   def fetch_okcupid url
-    return if url.empty?
-    data = OKCupid.fetch url
-    self['okc'] = data if data
+    unless url.empty?
+      data = OKCupid.fetch url
+      return self['okc'] = data if data
+    end
+    self.delete('okc')
   end
   def name
     return self['name'] if self['name']
@@ -80,6 +87,12 @@ class People < Model
     return self.okc.picture.gsub('160x160',"#{size}x#{size}") if self['okc']
     return "https://graph.facebook.com/#{self.fb.id}/picture?width=#{size}&height=#{size}" if self['fb']
     return nil
+  end
+  def fb
+    Model.new.merge((self['fb'] or { 'username' => '' }))
+  end
+  def okc
+    Model.new.merge((self['okc'] or { 'name' => '' }))
   end
 end
 

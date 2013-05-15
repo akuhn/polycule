@@ -1,0 +1,15 @@
+%h1 Edit Person
+
+%form{ action: "/person/#{@person.id}/edit", method: 'post' }
+  %p
+    %label{ for: 'name' } Name
+    %input{ name: 'name', type: 'text', value: @person.name }
+  %p
+    %label{ for: 'fb' } Facebook profile
+    %input{ name: 'fb', type: 'text', value: @person.fb.username }
+  %p
+    %label{ for: 'okc' } OKCupid profile
+    %input{ name: 'okc', type: 'text', value: @person.okc.name }
+  %p
+    %input.btn{ type: 'submit' }
+    

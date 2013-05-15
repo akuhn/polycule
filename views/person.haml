@@ -15,6 +15,9 @@
 	%a.btn{ href: "/love/new?me=#{@person.id}" } Add new love
 
 %p
+	%a.btn{ href: "/person/#{@person.id}/edit" } Edit #{@person.name}
+
+%p
 	%form{ action: "/person/#{@person.id}", method: 'post', onsubmit: 'return confirm("Are you sure?")' }
 		%input{ name: '_method', value: 'delete', type: 'hidden' }
 		%input.btn.btn-danger{ type: 'submit', value: "Remove #{@person.name}" } 
