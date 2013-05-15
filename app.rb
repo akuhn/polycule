@@ -11,6 +11,7 @@ if ENV['RACK_ENV'] == 'production'
 end
 
 enable :sessions
+set :session_secret, 'all your love are belong to us'
 
 require_relative 'model'
 
