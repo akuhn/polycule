@@ -103,7 +103,7 @@ post '/person/:me/edit', :auth => :user do
   p = People.find_by_id params[:me]
   p[:name] = params[:name] unless params[:name].empty?
   p.fetch_facebook params[:fb] unless p.fb.username == params[:fb]
-  p.fetch_okcupid params[:okc] unless p.okc.name == params[:okc]
+  p.fetch_okcupid params[:okc] unless p.okc.username == params[:okc]
   p.update!
   redirect "/person/#{p.id}"
 end
@@ -166,7 +166,7 @@ get '/vis/data.json', :auth => :user do
   content_type :json
   {
     nodes: People.all.collect do |each|
-      index[each['_id'].to_s]
+      index[each.id.to_s]
       {
         name: each.name,
         picture: each.picture(128)
@@ -174,8 +174,8 @@ get '/vis/data.json', :auth => :user do
     end,
     links: Loves.all.collect do |each|
       {
-        source: index[each['me_id'].to_s],
-        target: index[each['them_id'].to_s]
+        source: index[each.me_id.to_s],
+        target: index[each.them_id.to_s]
       }
     end    
   }.to_json

@@ -30,7 +30,7 @@ class OKCupid
     return unless doc.at('.screenname')
     age,gender = doc.at('.aso').content.split('/').map(&:strip)
     {
-      name: doc.at('.screenname').content,
+      username: doc.at('.screenname').content,
       age: age,
       gender: gender,
       picture: doc.at('.user img')['src'],
