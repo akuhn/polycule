@@ -12,6 +12,16 @@
 	
 		%table.table.table-bordered
 
+			- if @person.gender?
+				%tr
+					%td Gender
+					%td= @person.gender
+				
+			- if @person.location?
+				%tr
+					%td Gender
+					%td= @person.location
+
 			- if @person.fb?
 				%tr
 					%td Facebook

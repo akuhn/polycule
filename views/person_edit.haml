@@ -5,6 +5,12 @@
     %label{ for: 'name' } Name
     %input{ name: 'name', type: 'text', value: @person.name }
   %p
+    %label{ for: 'gender' } Gender
+    %input{ name: 'gender', type: 'text', value: @person.gender }
+  %p
+    %label{ for: 'location' } Location
+    %input{ name: 'location', type: 'text', value: @person.location }
+  %p
     %label{ for: 'fb' } Facebook profile
     %input{ name: 'fb', type: 'text', value: @person.fb.username }
   %p

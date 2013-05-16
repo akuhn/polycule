@@ -86,12 +86,13 @@ get '/person/new', :auth => :user do
 end
 
 post '/person/new', :auth => :user do
-  p = People.new
-  p[:name] = params[:name] unless params[:name].empty?
-  p.fetch_facebook params[:fb]
-  p.fetch_okcupid params[:okc]
-  p.save!
-  redirect "/people"
+  @person = People.new
+  @person.name = params[:name]
+  @person.fetch_facebook params[:fb]
+  @person.fetch_okcupid params[:okc]
+  @person.save!
+  flash[:notice] = "Person added." 
+  redirect "/person/#{@person.id}"
 end
 
 get '/person/:me/edit', :auth => :user do
@@ -100,12 +101,14 @@ get '/person/:me/edit', :auth => :user do
 end
 
 post '/person/:me/edit', :auth => :user do
-  p = People.find_by_id params[:me]
-  p[:name] = params[:name] unless params[:name].empty?
-  p.fetch_facebook params[:fb] unless p.fb.username == params[:fb]
-  p.fetch_okcupid params[:okc] unless p.okc.username == params[:okc]
-  p.update!
-  redirect "/person/#{p.id}"
+  @person = People.find_by_id params[:me]
+  @person[:name] = params[:name]
+  @person[:gender] = params[:gender]
+  @person[:location] = params[:location]
+  @person.fetch_facebook params[:fb] unless p.fb.username == params[:fb]
+  @person.fetch_okcupid params[:okc] unless p.okc.username == params[:okc]
+  @person.update!
+  redirect "/person/#{@person.id}"
 end
 
 get '/person/:me', :auth => :user do

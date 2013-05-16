@@ -98,8 +98,10 @@ end
 
 class People < Document
   attr :name
-  attr :fb, Document.with(:username)
-  attr :okc, Document.with(:username)
+  attr :gender
+  attr :location
+  attr :fb, Document.with(:username,:gender)
+  attr :okc, Document.with(:username,:gender)
   
   def relationships
     loves = Loves.find '$or' => [{me_id: id},{them_id: id}]
@@ -126,6 +128,15 @@ class People < Document
     return self.okc.username if self.okc?
     return 'A person'
   end
+  def gender?
+    self[:gender] or self.fb.gender? or self.okc.gender?
+  end
+  def gender
+    return self[:gender] if self[:gender]
+    return self.fb.gender if self.fb.gender?
+    return self.okc.gender if self.okc.gender?
+    return nil
+  end  
   def picture(size=100)
     return self.okc.picture.gsub('160x160',"#{size}x#{size}") if self.okc?
     return "https://graph.facebook.com/#{self.fb[:id]}/picture?width=#{size}&height=#{size}" if self.fb?
