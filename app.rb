@@ -105,8 +105,8 @@ post '/person/:me/edit', :auth => :user do
   @person[:name] = params[:name]
   @person[:gender] = params[:gender]
   @person[:location] = params[:location]
-  @person.fetch_facebook params[:fb] unless p.fb.username == params[:fb]
-  @person.fetch_okcupid params[:okc] unless p.okc.username == params[:okc]
+  @person.fetch_facebook params[:fb] unless @person.fb.username == params[:fb]
+  @person.fetch_okcupid params[:okc] unless @person.okc.username == params[:okc]
   @person.update!
   redirect "/person/#{@person.id}"
 end
