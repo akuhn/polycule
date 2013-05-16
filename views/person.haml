@@ -1,23 +1,41 @@
-%h2= @person.name
+%br
+.row
+	.span3
+		%br
+		- if @person.picture then
+			%p
+				%img.img-polaroid{ src: @person.picture(200) }
+	.span9
+		%h2 
+			= @person.name
+			%a.btn.pull-right{ href: "/person/#{@person.id}/edit" } Edit
+	
+		%table.table.table-bordered
 
-- if @person.picture then
-	%p
-		%img{ src: @person.picture(200) }
-
-%ul
-	- @person.relationships.each do |love|
-		%li
-			%a{ href: "/love/#{love.id}"} 
-				with
-				= love.them.name
+			- if @person.fb?
+				%tr
+					%td Facebook
+					%td
+						%a{ href: "https://www.facebook.com/profile.php?id=#{@person.fb[:id]}" }= @person.fb.name
 			
-%p
-	%a.btn{ href: "/love/new?me=#{@person.id}" } Add new love
+			- if @person.okc?
+				%tr
+					%td OKCupid
+					%td
+						%a{ href: @person.okc.link }= @person.okc.username 
+			
+			%tr
+				%td{ width: '23%' } Loves
+				%td
+					- @person.relationships.each do |love|
+						%p
+							%a{ href: "/love/#{love.id}"} 
+								with
+								= love.them.name
+					%p
+						%a.btn.btn-small{ href: "/love/new?me=#{@person.id}" } Add new love
 
-%p
-	%a.btn{ href: "/person/#{@person.id}/edit" } Edit #{@person.name}
 
-%p
-	%form{ action: "/person/#{@person.id}", method: 'post', onsubmit: 'return confirm("Are you sure?")' }
-		%input{ name: '_method', value: 'delete', type: 'hidden' }
-		%input.btn.btn-danger{ type: 'submit', value: "Remove #{@person.name}" } 
+		%form.pull-right{ action: "/person/#{@person.id}", method: 'post', onsubmit: 'return confirm("Are you sure?")' }
+			%input{ name: '_method', value: 'delete', type: 'hidden' }
+			%input.btn.btn-danger{ type: 'submit', value: "Remove #{@person.name}" } 
