@@ -3,7 +3,7 @@
 %ul
   - @people.sort_by(&:name).each do |person|
     %li
-      %a{ href: "/person/#{person['_id']}" }= person.name
+      %a{ href: "/person/#{person.id}" }= person.name
   
 %p
   %a.btn{ href: "/person/new" } Add new person
