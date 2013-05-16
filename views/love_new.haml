@@ -10,4 +10,4 @@
 			- People.all.sort_by(&:name).each do |them|
 				%option{ value: them.id }= them.name
 	%p
-		%input.btn{ type: 'submit' }
+		%input.btn{ type: 'submit', value: 'Create' }
