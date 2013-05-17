@@ -26,6 +26,14 @@ set :auth do |roles|
   end
 end
 
+helpers do
+  def split_tags(string)
+    string.split(/[,;]/).collect{|each| 
+      each.scan(/\w+[\s\-\/]?/).join.downcase.strip 
+    }.reject(&:empty?).sort
+  end
+end
+
 # Learning from http://128bitstudios.com/2011/11/21/authentication-with-sinatra
 
 get '/signup' do
@@ -137,7 +145,8 @@ post '/love/new', :auth => :user do
   them = People.find_by_id params[:them]
   data = {
     me_id: me.id,
-    them_id: them.id
+    them_id: them.id,
+    tags: split_tags(params[:tags])
   }
   Loves.new.update(data).save!
   redirect "/person/#{me.id}"
@@ -153,6 +162,18 @@ delete '/love/:us', :auth => :user do
   @love.delete!
   flash[:notice] = "Love removed."
   redirect "/person/#{@love.me_id}"
+end
+
+get '/love/:us/edit', :auth => :user do
+  @love = Loves.find_by_id params[:us]
+  haml :love_edit
+end
+
+post '/love/:us/edit', :auth => :user do
+  @love = Loves.find_by_id params[:us]
+  @love[:tags] = split_tags(params[:tags])
+  @love.update!
+  redirect "/love/#{@love.id}"
 end
 
 

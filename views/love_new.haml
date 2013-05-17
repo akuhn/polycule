@@ -10,4 +10,8 @@
 			- People.all.sort_by(&:name).each do |them|
 				%option{ value: them.id }= them.name
 	%p
-		%input.btn{ type: 'submit', value: 'Create' }
+		%label{ for: 'tags' } Tags
+		%input.input-xxlarge{ name: 'tags', type: 'text', placeholder: 'fluid bonded, married, frubbly, ...' }
+		%span.help-inline comma separated list
+	%p
+		%input.btn{ type: 'submit', value: 'Add new love' }

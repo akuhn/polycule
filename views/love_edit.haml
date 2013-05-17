@@ -1,0 +1,14 @@
+%h1 Edit Love
+
+%p
+	%a{ href: "/person/#{@love.me.id}" }= @love.me.name
+	and
+	%a{ href: "/person/#{@love.them.id}" }= @love.them.name
+
+%form{ action: "/love/#{@love.id}/edit" , method: 'post' }
+	%p
+		%label{ for: 'tags' } Tags
+		%input.input-xxlarge{ name: 'tags', type: 'text', value: @love.tags.join(', '), placeholder: 'fluid bonding, married, kinky, ...' }
+		%span.help-inline comma separated list
+	%p
+		%input.btn{ type: 'submit', value: 'Update love' }

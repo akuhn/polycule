@@ -154,6 +154,8 @@ class People < Document
 end
 
 class Loves < Document
+  attr :tags, Array
+  
   def swap
     self[:me_id],self[:them_id] = self[:them_id],self[:me_id]
   end

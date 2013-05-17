@@ -1,8 +1,19 @@
 %h1 Love
 
-%a{ href: "/person/#{@love.me.id}" }= @love.me.name
-and
-%a{ href: "/person/#{@love.them.id}" }= @love.them.name
+%p
+	%a{ href: "/person/#{@love.me.id}" }= @love.me.name
+	and
+	%a{ href: "/person/#{@love.them.id}" }= @love.them.name
+
+%p
+	%ul
+		- if @love.tags.empty?
+			%li Edit this love to add tags&hellip;
+		- @love.tags.each do |tag|
+			%li= tag
+
+%p
+	%a.btn{ href: "/love/#{@love.id}/edit" } Edit this love
 
 %p
 	%form{ action: "/love/#{@love.id}", method: 'post', onsubmit: 'return confirm("Are you sure?")' }

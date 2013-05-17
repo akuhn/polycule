@@ -40,7 +40,12 @@
 					- @person.relationships.each do |love|
 						%p
 							%a{ href: "/love/#{love.id}"} 
-								with
+								- if love.tags.empty?
+									in love
+								- else	
+									= love.tags.join(', ')
+							with
+							%a{ href: "/person/#{love.them.id}" }	
 								= love.them.name
 					%p
 						%a.btn.btn-small{ href: "/love/new?me=#{@person.id}" } Add new love
