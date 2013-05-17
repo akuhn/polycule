@@ -49,12 +49,27 @@ post '/signup' do
   hash = BCrypt::Engine.hash_secret params[:password], salt
   data = {
     username: params[:username],
+    email: params[:email],
     salt: salt,
     password_hash: hash,
+    pending_confirmation: true,
+    token: rand(1e20).to_s
   }
-  Users.new.merge(data).save!
-  flash[:notice] = "Signed up, log in to log in."
+  @user = Users.new(data)
+  @user.save!
+  p "Sending email to #{@user.email} with http://localhost:9393/signup/#{@user.token}"
+  flash[:notice] = "Confirmation email sent!"
   redirect '/'
+end
+
+get '/signup/:token' do
+  @user = Users.find_one token: params[:token]
+  @user.delete(:pending_confirmation)
+  @user.delete(:token)
+  @user[:active] = true
+  @user.update!
+  flash[:notice] = "Email confirmed."
+  redirect '/login'
 end
  
 get '/login' do
@@ -62,12 +77,13 @@ get '/login' do
 end
 
 post '/login' do
-  user = Users.find_one username: params[:username]
-  hash = BCrypt::Engine.hash_secret params[:password], user.salt
-  raise unless user.password_hash == hash
-  session[:user] = user.id
-  session[:username] = user.username
-  flash[:notice] = "Logged in as #{user.username}."
+  @user = Users.find_one username: params[:username]
+  hash = BCrypt::Engine.hash_secret params[:password], @user.salt
+  raise unless @user.password_hash == hash
+  raise unless @user[:active]
+  session[:user] = @user.id
+  session[:username] = @user.username
+  flash[:notice] = "Logged in as #{@user.username}."
   redirect '/'
 end
 
@@ -81,6 +97,7 @@ end
 get '/' do
   haml :index
 end
+  
 
 # People
 

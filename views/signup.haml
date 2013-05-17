@@ -2,6 +2,9 @@
 
 %form{ action: '/signup', method: 'post' }
 	%p
+		%label{ for: 'email' } Email
+		%input{ name: 'email', type: 'email' }
+	%p
 		%label{ for: 'username' } Username
 		%input{ name: 'username', type: 'text' }
 	%p
