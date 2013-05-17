@@ -194,12 +194,12 @@ end
 
 # Relationships
 
-get '/love/new', :auth => :user do
+get '/loves/new', :auth => :user do
   @person = People.find_by_id params[:me]
-  haml :love_new
+  haml :loves_new
 end 
 
-post '/love/new', :auth => :user do
+put '/loves', :auth => :user do
   me = People.find_by_id params[:me]
   them = People.find_by_id params[:them]
   data = {
@@ -228,7 +228,7 @@ get '/love/:us/edit', :auth => :user do
   haml :love_edit
 end
 
-post '/love/:us/edit', :auth => :user do
+post '/love/:us', :auth => :user do
   @love = Loves.find_by_id params[:us]
   @love[:tags] = split_tags(params[:tags])
   @love.update!
