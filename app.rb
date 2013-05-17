@@ -82,6 +82,65 @@ get '/' do
   haml :index
 end
 
+# Networks
+
+get '/polycules' do
+  @polycules = User.current.polycules
+  haml :polycules
+end
+
+get '/polycules/new' do
+  haml :polycules_new
+end
+
+post '/polycules' do
+  data = {
+    name: params[:name],
+    owner: Users.current,
+    users: [ Users.current ],
+  }
+  Polycules.new(data).save!
+  redirect '/polycules'
+end
+
+delete '/polycules/:id' do
+  @polycule = Polycules.find_by_id params[:id]
+  raise unless @polycule.owner == Users.current.id
+  @polyculde.delete!
+  redirect '/polycules'
+end
+
+get '/polycule' do
+  @polycule = Polycules.current
+  haml :polycule
+end
+
+put '/polycule' do
+  @polycule = Polycules.find_by_id params[:id]
+  raise unless @polycule.users.include? Users.current.id
+  @polycule.use_as_current!
+  redirect '/polycule'
+end
+
+put '/polycule/user/:them' do
+  @user = Users.find_by_id params[:them]
+  @polycule = Polycules.current
+  raise unless @polycule.owner == Users.current.id
+  @polycule.users << @user
+  @polycule.update!
+  redirect '/polycule'
+end
+
+delete '/polycule/user/:them' do
+  @user = Users.find_by_id params[:them]
+  @polycule = Polycules.current
+  raise unless @polycule.owner == Users.current.id
+  @polycule.users.delete @user
+  @polycule.update!
+  redirect '/polycule'
+end
+
+
 # People
 
 get '/people', :auth => :user do
