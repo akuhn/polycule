@@ -12,17 +12,15 @@ describe Document do
 
     context 'when unnamed' do
       it { should_not respond_to :name }
-      it '#name raises error' do 
-        expect{subject.name}.to raise_error(NameError)
+      it '#name raises no method error' do 
+        expect{subject.name}.to raise_error(NoMethodError)
       end
     end
 
     context 'when named' do
-      before(:each) { subject[:name] = "Rumpelstiltskin" }
+      before { subject[:name] = "value" }
       it { should respond_to :name }
-      it '#name returns name' do 
-        subject.name.should eq "Rumpelstiltskin" 
-      end
+      its(:name) { should eq "value" }
     end
       
   end
@@ -36,32 +34,20 @@ describe Document do
     it { should respond_to :name= }
     
     context 'when unnamed' do
-      it 'has no name' do 
-        subject.name?.should be_false 
-      end
-      it '#name is nil' do 
-        subject.name.should be_nil 
-      end
+      its(:name?) { should be_false }
+      its(:name) { should be_nil }
     end  
     
     context 'when named' do
-      before(:each) { subject.name = "Rumpelstiltskin" }
-      it 'has a name' do 
-        subject.name?.should be_true 
-      end
-      it '#name is name' do 
-        subject.name.should eq "Rumpelstiltskin" 
-      end 
+      before { subject.name = "value" }
+      its(:name?) { should be_true }
+      its(:name) { should eq "value" }
     end
 
     context 'with an empty name' do
-      before(:each) { subject.name = '' }
-      it 'has no name' do 
-        subject.name?.should be_false 
-      end
-      it '#name is empty string' do 
-        subject.name.should eq '' 
-      end 
+      before { subject.name = '' }
+      its(:name?) { should be_false }
+      its(:name) { should eq "" }
     end
       
   end
@@ -75,28 +61,16 @@ describe Document do
     it { should_not respond_to :embedded= }
   
     context 'when embedded document is unset' do
-      it 'has no embedded document' do
-        subject.embedded?.should be_false
-      end
-      it '#embedded is a kind of Document' do
-        subject.embedded.should be_a Document
-      end
-      it '#embedded is empty document' do
-        subject.embedded.should be_empty
-      end 
+      its(:embedded?) { should be_false }
+      its(:embedded) { should be_a Document }
+      its(:embedded) { should be_empty }
     end
     
     context 'when embedded document contains values' do
-      before(:each) { subject.embedded[:value] = :any }
-      it 'has embedded document' do
-        subject.embedded?.should be_true
-      end
-      it '#embedded is a kind of Document' do
-        subject.embedded.should be_a Document
-      end
-      it '#embedded contains values' do
-        subject.embedded.should have_at_least(1).values
-      end 
+      before { subject.embedded[:value] = "value" }
+      its(:embedded?) { should be_true }
+      its(:embedded) { should be_a Document }
+      its(:embedded) { should have_at_least(1).values }
     end
       
   end  
@@ -110,28 +84,16 @@ describe Document do
     it { should_not respond_to :array= }
 
     context 'when array is unset' do
-      it 'has no array field' do
-        subject.array?.should be_false
-      end
-      it '#array is instance of Array' do
-        subject.array.should be_instance_of Array
-      end
-      it '#array is empty' do
-        subject.array.should be_empty
-      end 
+      its(:array?) { should be_false }
+      its(:array) { should be_a Array }
+      its(:array) { should be_empty }
     end
   
     context 'when array contains values' do
-      before(:each) { subject.array << :value }
-      it 'has array field' do
-        subject.array?.should be_true
-      end
-      it '#array is instance of Array' do
-        subject.array.should be_instance_of Array
-      end
-      it '#array contains values' do
-        subject.array.should have_at_least(1).values
-      end 
+      before { subject.array << "value" }
+      its(:array?) { should be_true }
+      its(:array) { should be_a Array }
+      its(:array) { should have_at_least(1).value }
     end
     
   end  
