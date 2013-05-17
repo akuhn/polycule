@@ -148,11 +148,11 @@ get '/people', :auth => :user do
   haml :people
 end
 
-get '/person/new', :auth => :user do
-  haml :person_new
+get '/people/new', :auth => :user do
+  haml :people_new
 end
 
-post '/person/new', :auth => :user do
+put '/people', :auth => :user do
   @person = People.new
   @person.name = params[:name]
   @person.fetch_facebook params[:fb]
@@ -167,7 +167,7 @@ get '/person/:me/edit', :auth => :user do
   haml :person_edit
 end
 
-post '/person/:me/edit', :auth => :user do
+post '/person/:me', :auth => :user do
   @person = People.find_by_id params[:me]
   @person[:name] = params[:name]
   @person[:gender] = params[:gender]

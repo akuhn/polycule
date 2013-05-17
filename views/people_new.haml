@@ -1,6 +1,7 @@
 %h1 New Person
 
-%form{ action: '/person/new', method: 'post' }
+%form{ action: '/people', method: 'post' }
+  %input{ type: 'hidden', name: '_method', value: 'put' }
   %p
     %label{ for: 'name' } Name
     %input{ name: 'name', type: 'text' }
