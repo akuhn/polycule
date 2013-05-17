@@ -54,7 +54,7 @@ describe Document do
   
   describe 'with an embedded document' do
     
-    subject { Class.new(Document) do attr :embedded, Document end.new }
+    subject { Document.with(:embedded => Document).new }
     
     it { should respond_to :embedded }
     it { should respond_to :embedded? }
@@ -77,7 +77,7 @@ describe Document do
   
   describe 'with an Array field' do
     
-    subject { Class.new(Document) do attr :array, Array end.new }
+    subject { Document.with(:array => Array).new }
       
     it { should respond_to :array }
     it { should respond_to :array? }
@@ -97,5 +97,46 @@ describe Document do
     end
     
   end  
+  
+  describe "anonymous declaration" do
+    
+    it "should accept field names" do
+      type = Document.with(:a,:b,:c)
+      type.should be_a Class
+      type.schema.should include :a
+      type.schema.should include :b
+      type.schema.should include :c
+    end
+
+    it "should accept field names with type" do
+      type = Document.with(:a,b:Array,c:Document)
+      type.should be_a Class
+      type.schema.should include :a
+      type.schema.should include :b => Array
+      type.schema.should include :c => Document
+    end
+    
+  end
+
+  describe "class declaration" do
+
+    it "should accept field names" do
+      class A < Document
+        attr :field
+      end
+      A.should be_a Class
+      A.schema.should include :field
+    end
+
+    it "should accept field names with type" do
+      class B < Document
+        attr :field, Document
+      end
+      B.should be_a Class
+      B.schema.should include :field => Document
+    end
+    
+  end
+
 
 end

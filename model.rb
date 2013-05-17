@@ -25,16 +25,18 @@ class Document < Hash
       schema[name] = type
       if type
         module_eval %{ def #{name}; self.fetch(:#{name}){self[:#{name}]=self.class.schema[:#{name}].new}; end } 
-        module_eval %{ def #{name}?; not nil_or_empty? self[:#{name}]; end }
       else
         module_eval %{ def #{name}; self[:#{name}]; end }
-        module_eval %{ def #{name}?; not nil_or_empty? self[:#{name}]; end }
         module_eval %{ def #{name}=value; self[:#{name}]=value; end }
       end
+      module_eval %{ def #{name}?; not nil_or_empty? self[:#{name}]; end }
     end
     def with *fields
+      h = Hash.new
+      h.update(fields.pop) if Hash === fields.last 
+      fields.each{|name|h[name]=nil}
       doc = Class.new(Document)
-      fields.each{|name|doc.attr(name)}
+      h.each{|name,type|doc.attr(name,type)}
       return doc
     end
   end
