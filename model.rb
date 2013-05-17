@@ -25,10 +25,10 @@ class Document < Hash
       schema[name] = type
       if type
         module_eval %{ def #{name}; self.fetch(:#{name}){self[:#{name}]=self.class.schema[:#{name}].new}; end } 
-        module_eval %{ def #{name}?; self.include?(:#{name}) and not self.#{name}.empty?; end }
+        module_eval %{ def #{name}?; not nil_or_empty? self[:#{name}]; end }
       else
         module_eval %{ def #{name}; self[:#{name}]; end }
-        module_eval %{ def #{name}?; self.include?(:#{name}); end }
+        module_eval %{ def #{name}?; not nil_or_empty? self[:#{name}]; end }
         module_eval %{ def #{name}=value; self[:#{name}]=value; end }
       end
     end
@@ -48,10 +48,17 @@ class Document < Hash
     end
   end
   def compact
-    each{|name,each|self.delete(name) if each.nil? or each.respond_to?(:empty?) && each.empty?}
+    each{|name,each|self.delete(name) if nil_or_empty? each}
   end
   def method_missing(name,*args)
     self.fetch(name){super}
+  end
+  def respond_to_missing?(name,*args)
+    self.include?(name) or super
+  end
+  private
+  def nil_or_empty? value
+    value.nil? || value.respond_to?(:empty?) && value.empty?
   end
 end
 
