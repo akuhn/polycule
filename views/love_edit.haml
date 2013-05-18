@@ -5,7 +5,8 @@
 	and
 	%a{ href: "/person/#{@love.them.id}" }= @love.them.name
 
-%form{ action: "/love/#{@love.id}/edit" , method: 'post' }
+%form{ action: "/love/#{@love.id}" , method: 'post' }
+	%input{ type: 'hidden', name: '_method', value: 'put'  }
 	%p
 		%label{ for: 'tags' } Tags
 		%input.input-xxlarge{ name: 'tags', type: 'text', value: @love.tags.join(', '), placeholder: 'fluid bonding, married, kinky, ...' }

@@ -32,11 +32,26 @@ before do
   end
 end
 
+before do
+  # Seeding of partitioned polycules
+  if session[:user] and not session[:polycule]
+    current = Polycules.all.first
+    current = Polycules.create(name: 'Polycule').save! unless current
+    session[:polycule] = current.id
+  end
+end
+
 helpers do
   def split_tags(string)
     string.split(/[,;]/).collect{|each| 
       each.scan(/\w+[\s\-\/]?/).join.downcase.strip 
     }.reject(&:empty?).sort
+  end
+  def current_user
+    @user or @user = Users.with_id(session[:user])
+  end
+  def scope
+    session[:polycule]
   end
 end
 
@@ -58,7 +73,7 @@ post '/signup' do
     salt: salt,
     password_hash: hash,
   }
-  Users.new.merge(data).save!
+  Users.create(data).save!
   flash[:notice] = "Signed up, log in to log in."
   redirect '/'
 end
@@ -88,19 +103,47 @@ get '/' do
   haml :index
 end
 
+# Partition by current polycule
+
+get '/polycules' do
+  @polycules = Polycules.all
+  haml :polycules
+end
+
+get '/polycules/new' do
+  haml :polycules_new
+end
+
+post '/polycules' do
+  data = {
+    name: params[:name],
+    owner: current_user.id,
+    users: [current_user.id],
+  }
+  Polycules.create(data).save!
+  redirect '/polycules'
+end
+
+get '/polycule/:current' do
+  @polycule = Polycules.with_id params[:current]
+  session[:polycule] = @polycule.id
+  redirect '/people'
+end
+
+
 # People
 
 get '/people' do
-  @people = People.all
+  @people = People.current(scope).all
   haml :people
 end
 
-get '/person/new' do
-  haml :person_new
+get '/people/new' do
+  haml :people_new
 end
 
-post '/person/new' do
-  @person = People.new
+post '/people' do
+  @person = People.current(scope).create
   @person.name = params[:name]
   @person.fetch_facebook params[:fb]
   @person.fetch_okcupid params[:okc]
@@ -110,12 +153,12 @@ post '/person/new' do
 end
 
 get '/person/:me/edit' do
-  @person = People.find_by_id params[:me]
+  @person = People.current(scope).with_id params[:me]
   haml :person_edit
 end
 
-post '/person/:me/edit' do
-  @person = People.find_by_id params[:me]
+put '/person/:me' do
+  @person = People.current(scope).with_id params[:me]
   @person[:name] = params[:name]
   @person[:gender] = params[:gender]
   @person[:location] = params[:location]
@@ -126,12 +169,12 @@ post '/person/:me/edit' do
 end
 
 get '/person/:me' do
-  @person = People.find_by_id params[:me]
+  @person = People.current(scope).with_id params[:me]
   haml :person
 end
 
 delete '/person/:me' do
-  @person = People.find_by_id params[:me]
+  @person = People.current(scope).with_id params[:me]
   @person.delete!
   @person.relationships.each(&:delete!)
   flash[:notice] = "Person removed."
@@ -141,42 +184,42 @@ end
 
 # Relationships
 
-get '/love/new' do
-  @person = People.find_by_id params[:me]
-  haml :love_new
+get '/loves/new' do
+  @person = People.current(scope).with_id params[:me]
+  haml :loves_new
 end 
 
-post '/love/new' do
-  me = People.find_by_id params[:me]
-  them = People.find_by_id params[:them]
+post '/loves' do
+  me = People.current(scope).with_id params[:me]
+  them = People.current(scope).with_id params[:them]
   data = {
     me_id: me.id,
     them_id: them.id,
     tags: split_tags(params[:tags])
   }
-  Loves.new.update(data).save!
+  Loves.current(scope).create(data).save!
   redirect "/person/#{me.id}"
 end
 
 get '/love/:us' do
-  @love = Loves.find_by_id params[:us]
+  @love = Loves.current(scope).with_id params[:us]
   haml :love
 end
 
 delete '/love/:us' do
-  @love = Loves.find_by_id params[:us]
+  @love = Loves.current(scope).with_id params[:us]
   @love.delete!
   flash[:notice] = "Love removed."
   redirect "/person/#{@love.me_id}"
 end
 
 get '/love/:us/edit' do
-  @love = Loves.find_by_id params[:us]
+  @love = Loves.current(scope).with_id params[:us]
   haml :love_edit
 end
 
-post '/love/:us/edit' do
-  @love = Loves.find_by_id params[:us]
+put '/love/:us' do
+  @love = Loves.current(scope).with_id params[:us]
   @love[:tags] = split_tags(params[:tags])
   @love.update!
   redirect "/love/#{@love.id}"
@@ -195,14 +238,14 @@ get '/vis/data.json' do
   index = Hash.new{|h,k|h[k]=h.size}
   content_type :json
   {
-    nodes: People.all.collect do |each|
+    nodes: People.current(scope).all.collect do |each|
       index[each.id.to_s]
       {
         name: each.name,
         picture: each.picture(128)
       }
     end,
-    links: Loves.all.collect do |each|
+    links: Loves.current(scope).all.collect do |each|
       {
         source: index[each.me_id.to_s],
         target: index[each.them_id.to_s]

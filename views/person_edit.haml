@@ -1,6 +1,7 @@
 %h1 Edit Person
 
-%form{ action: "/person/#{@person.id}/edit", method: 'post' }
+%form{ action: "/person/#{@person.id}", method: 'post' }
+  %input{ type: 'hidden', name: '_method', value: 'put'  }
   %p
     %label{ for: 'name' } Name
     %input{ name: 'name', type: 'text', value: @person.name }

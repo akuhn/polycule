@@ -48,7 +48,7 @@
 							%a{ href: "/person/#{love.them.id}" }	
 								= love.them.name
 					%p
-						%a.btn.btn-small{ href: "/love/new?me=#{@person.id}" } Add new love
+						%a.btn.btn-small{ href: "/loves/new?me=#{@person.id}" } Add new love
 
 
 		%form.pull-right{ action: "/person/#{@person.id}", method: 'post', onsubmit: 'return confirm("Are you sure?")' }

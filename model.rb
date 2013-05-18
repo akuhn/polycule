@@ -66,25 +66,28 @@ end
 
 # Object-document mapper
 
-class Document
-  class <<self
-    def collection
-      DB[name.downcase]
-    end
-    def all
-      collection.find.collect{|each|self.new(each)}
-    end
-    def find_by_id id
-      id = BSON::ObjectId.from_string(id) if String === id
-      self.new(collection.find_one(_id: id))
-    end
-    def find query
-      collection.find(query).collect{|each|self.new(each)}
-    end
-    def find_one query
-      self.new(collection.find_one(query))
-    end
+module Query
+  def create data={}
+    document.new scope.merge(data)
   end
+  def all
+    find({})
+  end
+  def find query
+    found = document.collection.find scope.merge(query)
+    found.collect{|each|document.new each}
+  end
+  def with_id id
+    id = BSON::ObjectId.from_string(id) if String === id
+    find_one _id: id 
+  end
+  def find_one query
+    found = document.collection.find_one scope.merge(query)
+    document.new found if found
+  end
+end
+
+module Update
   def id
     fetch(:_id){raise}
   end
@@ -105,7 +108,46 @@ class Document
   end
 end
 
-class People < Document
+class Collection < Document
+  class <<self
+    include Query
+    def collection
+      DB[name.downcase]
+    end
+    def document
+      self
+    end
+    def scope
+      {}
+    end
+  end
+  include Update
+end  
+
+class Scope
+  include Query
+  attr_reader :document,:scope
+  def initialize(type,scope)
+    @document = type
+    @scope = {scope: scope}
+  end
+end
+
+class CollectionWithScope < Document
+  class <<self
+    def current scope
+      Scope.new self, scope
+    end
+    def collection
+      DB[name.downcase]
+    end
+  end
+  include Update
+end
+
+# Application model
+
+class People < CollectionWithScope
   attr :name
   attr :gender
   attr :location
@@ -113,7 +155,7 @@ class People < Document
   attr :okc, Document.with(:username,:gender)
   
   def relationships
-    loves = Loves.find '$or' => [{me_id: id},{them_id: id}]
+    loves = Loves.current(scope).find '$or' => [{me_id: id},{them_id: id}]
     loves.each{|love| love.swap unless love.me_id == id }
   end
   def fetch_facebook url
@@ -153,19 +195,22 @@ class People < Document
   end
 end
 
-class Loves < Document
+class Loves < CollectionWithScope
   attr :tags, Array
   
   def swap
     self[:me_id],self[:them_id] = self[:them_id],self[:me_id]
   end
   def them
-    @them or @them = People.find_by_id(them_id)
+    @them or @them = People.current(scope).with_id(them_id)
   end
   def me
-    @me or @me = People.find_by_id(me_id)
+    @me or @me = People.current(scope).with_id(me_id)
   end
 end
 
-class Users < Document
+class Users < Collection
+end
+
+class Polycules < Collection
 end
