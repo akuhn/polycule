@@ -46,11 +46,6 @@ helpers do
   end
 end
 
-get '/example' do
-  content_type = :txt
-  current_user.inspect
-end
-
 # Learning from http://128bitstudios.com/2011/11/21/authentication-with-sinatra
 
 get '/signup' do
