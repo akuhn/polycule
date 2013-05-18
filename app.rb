@@ -39,7 +39,7 @@ helpers do
     }.reject(&:empty?).sort
   end
   def current_user
-    @user or @user = Users.find_by_id(session[:user])
+    @user or @user = Users.with_id(session[:user])
   end
   def scope
     session[:polycule]
@@ -121,40 +121,29 @@ post '/polycules' do
 end
 
 delete '/polycules/:id' do
-  @polycule = Polycules.find_by_id params[:id]
+  @polycule = Polycules.with_id params[:id]
   raise unless @polycule.owner == current_user.id
   @polyculde.delete!
   redirect '/polycules'
 end
 
 get '/polycule' do
-  @polycule = Polycules.find_by_id session[:polycule]
+  @polycule = Polycules.with_id session[:polycule]
   haml :polycule
 end
 
 put '/polycule' do
-  @polycule = Polycules.find_by_id params[:id]
-  raise unless @polycule.users.include? current_user_id
+  @polycule = Polycules.with_id params[:id]
   session[:polycule] = @polycule.id
   redirect '/polycule'
 end
 
 put '/polycule/user/:them' do
-  @user = Users.find_by_id params[:them]
-  @polycule = Polycules.current
-  raise unless @polycule.owner == Users.current.id
-  @polycule.users << @user
-  @polycule.update!
-  redirect '/polycule'
+  raise
 end
 
 delete '/polycule/user/:them' do
-  @user = Users.find_by_id params[:them]
-  @polycule = Polycules.current
-  raise unless @polycule.owner == Users.current.id
-  @polycule.users.delete @user
-  @polycule.update!
-  redirect '/polycule'
+  raise
 end
 
 
@@ -180,12 +169,12 @@ post '/people' do
 end
 
 get '/person/:me/edit' do
-  @person = People.current(scope).with params[:me]
+  @person = People.current(scope).with_id params[:me]
   haml :person_edit
 end
 
 put '/person/:me' do
-  @person = People.current(scope).with params[:me]
+  @person = People.current(scope).with_id params[:me]
   @person[:name] = params[:name]
   @person[:gender] = params[:gender]
   @person[:location] = params[:location]
@@ -196,12 +185,12 @@ put '/person/:me' do
 end
 
 get '/person/:me' do
-  @person = People.current(scope).with params[:me]
+  @person = People.current(scope).with_id params[:me]
   haml :person
 end
 
 delete '/person/:me' do
-  @person = People.current(scope).with params[:me]
+  @person = People.current(scope).with_id params[:me]
   @person.delete!
   @person.relationships.each(&:delete!)
   flash[:notice] = "Person removed."
@@ -212,13 +201,13 @@ end
 # Relationships
 
 get '/loves/new' do
-  @person = People.current(scope).with params[:me]
+  @person = People.current(scope).with_id params[:me]
   haml :loves_new
 end 
 
 post '/loves' do
-  me = People.current(scope).with params[:me]
-  them = People.current(scope).with params[:them]
+  me = People.current(scope).with_id params[:me]
+  them = People.current(scope).with_id params[:them]
   data = {
     me_id: me.id,
     them_id: them.id,
@@ -229,24 +218,24 @@ post '/loves' do
 end
 
 get '/love/:us' do
-  @love = Loves.current(scope).with params[:us]
+  @love = Loves.current(scope).with_id params[:us]
   haml :love
 end
 
 delete '/love/:us' do
-  @love = Loves.current(scope).with params[:us]
+  @love = Loves.current(scope).with_id params[:us]
   @love.delete!
   flash[:notice] = "Love removed."
   redirect "/person/#{@love.me_id}"
 end
 
 get '/love/:us/edit' do
-  @love = Loves.current(scope).with params[:us]
+  @love = Loves.current(scope).with_id params[:us]
   haml :love_edit
 end
 
 put '/love/:us' do
-  @love = Loves.current(scope).with params[:us]
+  @love = Loves.current(scope).with_id params[:us]
   @love[:tags] = split_tags(params[:tags])
   @love.update!
   redirect "/love/#{@love.id}"

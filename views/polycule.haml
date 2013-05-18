@@ -3,13 +3,13 @@
 %p Owners
 %ul
 	%li
-		= Users.find_by_id(@polycule.owner).email
+		= Users.with_id(@polycule.owner).email
 		
 %p Users
 %ul
 	- @polycule.users.each do |each|
 		%li
-			= Users.find_by_id(each).email
+			= Users.with_id(each).email
 			%a.btn.btn-small.btn-danger{ href: "/polycule/user/#{each}", method: 'delete' } Unshare
 	
 %form{ action: '/polycule/user/id', method: 'post' }

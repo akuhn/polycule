@@ -66,40 +66,28 @@ end
 
 # Object-document mapper
 
-class Scope
-  def initialize(document_class,scope)
-    @document = document_class
-    @scope = { scope: scope }
-  end
-  def new
-    @document.new @scope.dup
+module Query
+  def create data={}
+    document.new scope.merge(data)
   end
   def all
     find({})
   end
   def find query
-    found = @document.collection.find @scope.merge(query)
-    found.collect{|each|@document.new each}
+    found = document.collection.find scope.merge(query)
+    found.collect{|each|document.new each}
   end
-  def with id
+  def with_id id
     id = BSON::ObjectId.from_string(id) if String === id
     find_one _id: id 
   end
   def find_one query
-    found = @document.collection.find_one @scope.merge(query)
-    @document.new found
+    found = document.collection.find_one scope.merge(query)
+    document.new found
   end
 end
 
-class Document
-  class <<self
-    def current scope
-      Scope.new self, scope
-    end
-    def collection
-      DB[name.downcase]
-    end
-  end
+module Update
   def id
     fetch(:_id){raise}
   end
@@ -120,7 +108,46 @@ class Document
   end
 end
 
-class People < Document
+class Collection < Document
+  class <<self
+    include Query
+    def collection
+      DB[name.downcase]
+    end
+    def document
+      self
+    end
+    def scope
+      {}
+    end
+  end
+  include Update
+end  
+
+class Scope
+  include Query
+  attr_reader :document,:scope
+  def initialize(type,scope)
+    @document = type
+    @scope = {scope: scope}
+  end
+end
+
+class CollectionWithScope < Document
+  class <<self
+    def current scope
+      Scope.new self, scope
+    end
+    def collection
+      DB[name.downcase]
+    end
+  end
+  include Update
+end
+
+# Application model
+
+class People < CollectionWithScope
   attr :name
   attr :gender
   attr :location
@@ -168,7 +195,7 @@ class People < Document
   end
 end
 
-class Loves < Document
+class Loves < CollectionWithScope
   attr :tags, Array
   
   def swap
@@ -182,17 +209,8 @@ class Loves < Document
   end
 end
 
-require 'sinatra'
-
-class Users < Document
-  class <<self
-    extend Sinatra::Delegator
-    
-    def current
-      find_by_id session[:user]
-    end
-  end
+class Users < Collection
 end
 
-class Polycules < Document
+class Polycules < Collection
 end
