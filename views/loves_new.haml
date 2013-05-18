@@ -1,14 +1,13 @@
 %h1 New Love
 
 %form{ action: '/loves', method: 'post' }
-	%input{ type: 'hidden', name: '_method', value: 'put' }
 	%input{ type: 'hidden', name: 'me', value: @person.id }
 	%p
 		= @person.name
 		and
 		%select{ name: 'them' }
 			%option
-			- People.all.sort_by(&:name).each do |them|
+			- People.current(scope).all.sort_by(&:name).each do |them|
 				%option{ value: them.id }= them.name
 	%p
 		%label{ for: 'tags' } Tags

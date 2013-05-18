@@ -38,6 +38,17 @@ helpers do
       each.scan(/\w+[\s\-\/]?/).join.downcase.strip 
     }.reject(&:empty?).sort
   end
+  def current_user
+    @user or @user = Users.find_by_id(session[:user])
+  end
+  def scope
+    session[:polycule]
+  end
+end
+
+get '/example' do
+  content_type = :txt
+  current_user.inspect
 end
 
 # Learning from http://128bitstudios.com/2011/11/21/authentication-with-sinatra
@@ -88,10 +99,10 @@ get '/' do
   haml :index
 end
 
-# Networks
+# Partition by current polycule
 
 get '/polycules' do
-  @polycules = User.current.polycules
+  @polycules = Polycules.all
   haml :polycules
 end
 
@@ -102,8 +113,8 @@ end
 post '/polycules' do
   data = {
     name: params[:name],
-    owner: Users.current,
-    users: [ Users.current ],
+    owner: current_user.id,
+    users: [current_user.id],
   }
   Polycules.new(data).save!
   redirect '/polycules'
@@ -111,20 +122,20 @@ end
 
 delete '/polycules/:id' do
   @polycule = Polycules.find_by_id params[:id]
-  raise unless @polycule.owner == Users.current.id
+  raise unless @polycule.owner == current_user.id
   @polyculde.delete!
   redirect '/polycules'
 end
 
 get '/polycule' do
-  @polycule = Polycules.current
+  @polycule = Polycules.find_by_id session[:polycule]
   haml :polycule
 end
 
 put '/polycule' do
   @polycule = Polycules.find_by_id params[:id]
-  raise unless @polycule.users.include? Users.current.id
-  @polycule.use_as_current!
+  raise unless @polycule.users.include? current_user_id
+  session[:polycule] = @polycule.id
   redirect '/polycule'
 end
 
@@ -150,7 +161,7 @@ end
 # People
 
 get '/people' do
-  @people = People.all
+  @people = People.current(scope).all
   haml :people
 end
 
@@ -159,7 +170,7 @@ get '/people/new' do
 end
 
 post '/people' do
-  @person = People.new
+  @person = People.current(scope).new
   @person.name = params[:name]
   @person.fetch_facebook params[:fb]
   @person.fetch_okcupid params[:okc]
@@ -169,12 +180,12 @@ post '/people' do
 end
 
 get '/person/:me/edit' do
-  @person = People.find_by_id params[:me]
+  @person = People.current(scope).with params[:me]
   haml :person_edit
 end
 
-post '/person/:me' do
-  @person = People.find_by_id params[:me]
+put '/person/:me' do
+  @person = People.current(scope).with params[:me]
   @person[:name] = params[:name]
   @person[:gender] = params[:gender]
   @person[:location] = params[:location]
@@ -185,12 +196,12 @@ post '/person/:me' do
 end
 
 get '/person/:me' do
-  @person = People.find_by_id params[:me]
+  @person = People.current(scope).with params[:me]
   haml :person
 end
 
 delete '/person/:me' do
-  @person = People.find_by_id params[:me]
+  @person = People.current(scope).with params[:me]
   @person.delete!
   @person.relationships.each(&:delete!)
   flash[:notice] = "Person removed."
@@ -201,41 +212,41 @@ end
 # Relationships
 
 get '/loves/new' do
-  @person = People.find_by_id params[:me]
+  @person = People.current(scope).with params[:me]
   haml :loves_new
 end 
 
-put '/loves' do
-  me = People.find_by_id params[:me]
-  them = People.find_by_id params[:them]
+post '/loves' do
+  me = People.current(scope).with params[:me]
+  them = People.current(scope).with params[:them]
   data = {
     me_id: me.id,
     them_id: them.id,
     tags: split_tags(params[:tags])
   }
-  Loves.new.update(data).save!
+  Loves.current(scope).new.update(data).save!
   redirect "/person/#{me.id}"
 end
 
 get '/love/:us' do
-  @love = Loves.find_by_id params[:us]
+  @love = Loves.current(scope).with params[:us]
   haml :love
 end
 
 delete '/love/:us' do
-  @love = Loves.find_by_id params[:us]
+  @love = Loves.current(scope).with params[:us]
   @love.delete!
   flash[:notice] = "Love removed."
   redirect "/person/#{@love.me_id}"
 end
 
 get '/love/:us/edit' do
-  @love = Loves.find_by_id params[:us]
+  @love = Loves.current(scope).with params[:us]
   haml :love_edit
 end
 
-post '/love/:us' do
-  @love = Loves.find_by_id params[:us]
+put '/love/:us' do
+  @love = Loves.current(scope).with params[:us]
   @love[:tags] = split_tags(params[:tags])
   @love.update!
   redirect "/love/#{@love.id}"

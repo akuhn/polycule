@@ -1,0 +1,17 @@
+%h1 Polycules
+
+:javascript
+	$(function() {
+		$('a[method="put"]').on('click',function() {
+			$('<form action="'+$(this).attr('href')+'" method="post"><input name="_method" value="put"></form>').submit();
+			return false;
+		})
+	})
+
+%ul
+	- @polycules.each do |polycule|
+		%li 
+			%a{ href: "/polycule?id=#{polycule.id}", method: 'put' }= polycule.name
+			
+%p
+	%a.btn{ href: "/polycules/new" } Create new polycule

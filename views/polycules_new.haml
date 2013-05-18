@@ -1,0 +1,8 @@
+%h1 Create new polycule
+
+%form{ action: '/polycules', method: 'post' }
+	%p
+		%label{ for: 'name' } Name
+		%input{ name: 'name', type: 'text' }
+	%p
+		%input.btn{ type: 'submit', value: 'Create' }

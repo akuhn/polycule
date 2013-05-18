@@ -66,23 +66,38 @@ end
 
 # Object-document mapper
 
+class Scope
+  def initialize(document_class,scope)
+    @document = document_class
+    @scope = { scope: scope }
+  end
+  def new
+    @document.new @scope.dup
+  end
+  def all
+    find({})
+  end
+  def find query
+    found = @document.collection.find @scope.merge(query)
+    found.collect{|each|@document.new each}
+  end
+  def with id
+    id = BSON::ObjectId.from_string(id) if String === id
+    find_one _id: id 
+  end
+  def find_one query
+    found = @document.collection.find_one @scope.merge(query)
+    @document.new found
+  end
+end
+
 class Document
   class <<self
+    def current scope
+      Scope.new self, scope
+    end
     def collection
       DB[name.downcase]
-    end
-    def all
-      collection.find.collect{|each|self.new(each)}
-    end
-    def find_by_id id
-      id = BSON::ObjectId.from_string(id) if String === id
-      self.new(collection.find_one(_id: id))
-    end
-    def find query
-      collection.find(query).collect{|each|self.new(each)}
-    end
-    def find_one query
-      self.new(collection.find_one(query))
     end
   end
   def id
@@ -113,7 +128,7 @@ class People < Document
   attr :okc, Document.with(:username,:gender)
   
   def relationships
-    loves = Loves.find '$or' => [{me_id: id},{them_id: id}]
+    loves = Loves.current(scope).find '$or' => [{me_id: id},{them_id: id}]
     loves.each{|love| love.swap unless love.me_id == id }
   end
   def fetch_facebook url
@@ -160,12 +175,24 @@ class Loves < Document
     self[:me_id],self[:them_id] = self[:them_id],self[:me_id]
   end
   def them
-    @them or @them = People.find_by_id(them_id)
+    @them or @them = People.current(scope).with(them_id)
   end
   def me
-    @me or @me = People.find_by_id(me_id)
+    @me or @me = People.current(scope).with(me_id)
   end
 end
 
+require 'sinatra'
+
 class Users < Document
+  class <<self
+    extend Sinatra::Delegator
+    
+    def current
+      find_by_id session[:user]
+    end
+  end
+end
+
+class Polycules < Document
 end

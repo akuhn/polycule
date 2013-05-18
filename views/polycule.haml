@@ -1,0 +1,19 @@
+%h1 #{@polycule.name}
+
+%p Owners
+%ul
+	%li
+		= Users.find_by_id(@polycule.owner).email
+		
+%p Users
+%ul
+	- @polycule.users.each do |each|
+		%li
+			= Users.find_by_id(each).email
+			%a.btn.btn-small.btn-danger{ href: "/polycule/user/#{each}", method: 'delete' } Unshare
+	
+%form{ action: '/polycule/user/id', method: 'post' }
+	%input{ type: 'hidden', name: '_method', value: 'put' }
+	%p
+		%select
+		%input.btn{ type: 'submit', value: 'Share' }
