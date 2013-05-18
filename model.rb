@@ -83,7 +83,7 @@ module Query
   end
   def find_one query
     found = document.collection.find_one scope.merge(query)
-    document.new found
+    document.new found if found
   end
 end
 

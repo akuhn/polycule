@@ -32,6 +32,15 @@ before do
   end
 end
 
+before do
+  # Seeding of partitioned polycules
+  if session[:user] and not session[:polycule]
+    current = Polycules.all.first
+    current = Polycules.create(name: 'Polycule').save! unless current
+    session[:polycule] = current.id
+  end
+end
+
 helpers do
   def split_tags(string)
     string.split(/[,;]/).collect{|each| 
@@ -64,7 +73,7 @@ post '/signup' do
     salt: salt,
     password_hash: hash,
   }
-  Users.new.merge(data).save!
+  Users.create(data).save!
   flash[:notice] = "Signed up, log in to log in."
   redirect '/'
 end
@@ -111,7 +120,7 @@ post '/polycules' do
     owner: current_user.id,
     users: [current_user.id],
   }
-  Polycules.new(data).save!
+  Polycules.create(data).save!
   redirect '/polycules'
 end
 
@@ -134,7 +143,7 @@ get '/people/new' do
 end
 
 post '/people' do
-  @person = People.current(scope).new
+  @person = People.current(scope).create
   @person.name = params[:name]
   @person.fetch_facebook params[:fb]
   @person.fetch_okcupid params[:okc]
@@ -188,7 +197,7 @@ post '/loves' do
     them_id: them.id,
     tags: split_tags(params[:tags])
   }
-  Loves.current(scope).new.update(data).save!
+  Loves.current(scope).create(data).save!
   redirect "/person/#{me.id}"
 end
 
