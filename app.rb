@@ -17,12 +17,18 @@ configure :production do
   end
 end
 
-set :auth do |roles|
-  condition do
-    unless session[:user]
-      flash[:notice] = "You must login to access this page."
-      redirect '/login' 
-    end
+WHITELIST = %w{
+  /
+  /login
+  /logout
+  /signup
+}
+
+before do
+  pass if WHITELIST.include? request.path_info
+  if not session[:user]
+    flash[:notice] = "You must login to access this page."
+    redirect '/login' 
   end
 end
 
@@ -143,16 +149,16 @@ end
 
 # People
 
-get '/people', :auth => :user do
+get '/people' do
   @people = People.all
   haml :people
 end
 
-get '/people/new', :auth => :user do
+get '/people/new' do
   haml :people_new
 end
 
-put '/people', :auth => :user do
+post '/people' do
   @person = People.new
   @person.name = params[:name]
   @person.fetch_facebook params[:fb]
@@ -162,12 +168,12 @@ put '/people', :auth => :user do
   redirect "/person/#{@person.id}"
 end
 
-get '/person/:me/edit', :auth => :user do
+get '/person/:me/edit' do
   @person = People.find_by_id params[:me]
   haml :person_edit
 end
 
-post '/person/:me', :auth => :user do
+post '/person/:me' do
   @person = People.find_by_id params[:me]
   @person[:name] = params[:name]
   @person[:gender] = params[:gender]
@@ -178,12 +184,12 @@ post '/person/:me', :auth => :user do
   redirect "/person/#{@person.id}"
 end
 
-get '/person/:me', :auth => :user do
+get '/person/:me' do
   @person = People.find_by_id params[:me]
   haml :person
 end
 
-delete '/person/:me', :auth => :user do
+delete '/person/:me' do
   @person = People.find_by_id params[:me]
   @person.delete!
   @person.relationships.each(&:delete!)
@@ -194,12 +200,12 @@ end
 
 # Relationships
 
-get '/loves/new', :auth => :user do
+get '/loves/new' do
   @person = People.find_by_id params[:me]
   haml :loves_new
 end 
 
-put '/loves', :auth => :user do
+put '/loves' do
   me = People.find_by_id params[:me]
   them = People.find_by_id params[:them]
   data = {
@@ -211,24 +217,24 @@ put '/loves', :auth => :user do
   redirect "/person/#{me.id}"
 end
 
-get '/love/:us', :auth => :user do
+get '/love/:us' do
   @love = Loves.find_by_id params[:us]
   haml :love
 end
 
-delete '/love/:us', :auth => :user do
+delete '/love/:us' do
   @love = Loves.find_by_id params[:us]
   @love.delete!
   flash[:notice] = "Love removed."
   redirect "/person/#{@love.me_id}"
 end
 
-get '/love/:us/edit', :auth => :user do
+get '/love/:us/edit' do
   @love = Loves.find_by_id params[:us]
   haml :love_edit
 end
 
-post '/love/:us', :auth => :user do
+post '/love/:us' do
   @love = Loves.find_by_id params[:us]
   @love[:tags] = split_tags(params[:tags])
   @love.update!
@@ -240,11 +246,11 @@ end
 
 # Polycule visualization
 
-get '/vis', :auth => :user do
+get '/vis' do
   haml :vis
 end
 
-get '/vis/data.json', :auth => :user do
+get '/vis/data.json' do
   index = Hash.new{|h,k|h[k]=h.size}
   content_type :json
   {
