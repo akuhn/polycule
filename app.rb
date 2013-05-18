@@ -120,30 +120,10 @@ post '/polycules' do
   redirect '/polycules'
 end
 
-delete '/polycules/:id' do
-  @polycule = Polycules.with_id params[:id]
-  raise unless @polycule.owner == current_user.id
-  @polyculde.delete!
-  redirect '/polycules'
-end
-
-get '/polycule' do
-  @polycule = Polycules.with_id session[:polycule]
-  haml :polycule
-end
-
-put '/polycule' do
-  @polycule = Polycules.with_id params[:id]
+get '/polycule/:current' do
+  @polycule = Polycules.with_id params[:current]
   session[:polycule] = @polycule.id
-  redirect '/polycule'
-end
-
-put '/polycule/user/:them' do
-  raise
-end
-
-delete '/polycule/user/:them' do
-  raise
+  redirect '/people'
 end
 
 
@@ -254,14 +234,14 @@ get '/vis/data.json' do
   index = Hash.new{|h,k|h[k]=h.size}
   content_type :json
   {
-    nodes: People.all.collect do |each|
+    nodes: People.current(scope).all.collect do |each|
       index[each.id.to_s]
       {
         name: each.name,
         picture: each.picture(128)
       }
     end,
-    links: Loves.all.collect do |each|
+    links: Loves.current(scope).all.collect do |each|
       {
         source: index[each.me_id.to_s],
         target: index[each.them_id.to_s]

@@ -9,9 +9,9 @@
 	})
 
 %ul
-	- @polycules.each do |polycule|
+	- @polycules.each do |each|
 		%li 
-			%a{ href: "/polycule?id=#{polycule.id}", method: 'put' }= polycule.name
+			= each.name
 			
 %p
 	%a.btn{ href: "/polycules/new" } Create new polycule

@@ -4,6 +4,7 @@
 		%title My Polycule v0.1
 		%link{ href: '/bootstrap.min.css', rel: 'stylesheet' }
 		%script{ src: 'http://code.jquery.com/jquery-1.9.1.min.js' }
+		%script{ src: '/bootstrap.min.js' }
 	%body
 	
 		.navbar.navbar-static-top
@@ -15,23 +16,36 @@
 							%a{ href: '/people' } People
 						%li
 							%a{ href: '/vis' } Visualization
-					%p.navbar-text.pull-right
-						- if session[:user]
-							You are #{session[:username]}, 
-							%a{ href: '/logout' } log out?
-						- else
-							%a{ href: '/login' } Log in
+					%ul.nav.pull-right
+						- if not session[:user]
+							%li
+								%a{ href: '/login' } Log in
+						- else 
+							%li.dropdown
+								%a.dropdown-toggle{ 'data-toggle' => "dropdown", href: '#' }
+									#{session[:username]}'s
+									= Polycules.with_id(session[:polycule]).name
+									%b.caret
+								%ul.dropdown-menu
+									%li 
+										%a{ href: '/polycules' } All polycules
+									%li.divider
+									- Polycules.all.each do |each|
+										%li 
+											%a{ href: "/polycule/#{each.id}" }= each.name
+									%li.divider
+									%li 
+										%a{ href: '/logout' } Log out
 							
 		.container
 			.row
 				.span12
 				
-					- if flash[:notice]	
+					- if flash[:notice] 
 						%p
 							.alert
 								%strong Notice!
 								= flash[:notice]	
 				
 					= yield
-					
 					

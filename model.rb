@@ -202,10 +202,10 @@ class Loves < CollectionWithScope
     self[:me_id],self[:them_id] = self[:them_id],self[:me_id]
   end
   def them
-    @them or @them = People.current(scope).with(them_id)
+    @them or @them = People.current(scope).with_id(them_id)
   end
   def me
-    @me or @me = People.current(scope).with(me_id)
+    @me or @me = People.current(scope).with_id(me_id)
   end
 end
 
