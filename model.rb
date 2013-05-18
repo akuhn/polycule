@@ -5,13 +5,22 @@ require 'net/http'
 
 require_relative 'okcupid'
 
-if ENV['RACK_ENV'] == 'production'
+def test?
+  ENV['RACK_ENV'] == 'test'
+end
+
+case ENV['RACK_ENV']
+when 'production'
   db = URI.parse(ENV['MONGOHQ_URL'])
   db_name = db.path.gsub(/^\//, '')
   DB = Mongo::Connection.new(db.host, db.port).db(db_name)
   DB.authenticate(db.user, db.password) unless (db.user.nil? || db.user.nil?)
-else
+when 'test'
+  DB = Mongo::Connection.new("localhost", 27017).db('polycule_spec')
+when 'development'
   DB = Mongo::Connection.new("localhost", 27017).db('polycule')
+else
+  raise
 end
 
 # Meta-programming to use hashes as objects
@@ -71,9 +80,9 @@ module Query
     document.new scope.merge(data)
   end
   def all
-    find({})
+    find
   end
-  def find query
+  def find query={}
     found = document.collection.find scope.merge(query)
     found.collect{|each|document.new each}
   end
@@ -81,7 +90,7 @@ module Query
     id = BSON::ObjectId.from_string(id) if String === id
     find_one _id: id 
   end
-  def find_one query
+  def find_one query={}
     found = document.collection.find_one scope.merge(query)
     document.new found if found
   end
@@ -96,7 +105,8 @@ module Update
   end
   def save!
     raise if self.id? 
-    self.class.collection.insert(self.compact)
+    self[:_id] = self.class.collection.insert(self.compact)
+    return self
   end
   def update!
     raise unless self.id? 
@@ -120,6 +130,9 @@ class Collection < Document
     def scope
       {}
     end
+    def drop!
+      self.collection.drop if test?
+    end
   end
   include Update
 end  
@@ -140,6 +153,9 @@ class CollectionWithScope < Document
     end
     def collection
       DB[name.downcase]
+    end
+    def drop!
+      self.collection.drop if test?
     end
   end
   include Update
