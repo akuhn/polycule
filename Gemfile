@@ -7,3 +7,8 @@ gem "bcrypt-ruby"
 gem "haml"
 gem "json"
 gem "nokogiri"
+
+group :test do
+  gem "rspec"
+  gem "capybara"
+end
